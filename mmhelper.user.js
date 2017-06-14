@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MM商城应用信息获取
 // @namespace    https://yooooex.com/
-// @version      0.4
+// @version      0.5
 // @description  自动复制应用名称,应用ID,开发者,版本号,快速搜索检查是否为商城应用
 // @author       YooooEX
 // @match        http://mm.10086.cn/*
@@ -11,6 +11,7 @@
 (function () {
     'use strict';
     var storageKey = "_appData";
+    var res;
     $(document).ready(function () {
         console.log("ready");
 
@@ -36,10 +37,7 @@
         app.id = window.location.pathname.match(/\d+/);
         app.version = $(".mj_info.font-f-yh li:eq(2)").text().match(regex_infos).toString().replace("：", "");
         app.dev = $(".mj_info.font-f-yh li:eq(4)").text().match(regex_infos).toString().replace("：", "");
-        var res = app.name + ";" + app.id + ";" + app.dev + ";" + "MM商城;" + app.name + ".apk;" + app.version;
-        // 存储应用信息
-        localStorage.setItem(storageKey, res);
-        console.log("stored info: " + res);
+        res = app.name + ";" + app.id + ";" + app.dev + ";" + "MM商城;" + app.name + ".apk;" + app.version;
 
         // 显示获取的信息
         var helper = document.getElementById("_helper");
@@ -60,7 +58,13 @@
 
             var checkBtn = document.createElement("button");
             checkBtn.textContent = "检查";
-            checkBtn.addEventListener("click", function () { window.open(target + app.name); });
+            checkBtn.addEventListener("click", function () {
+                // 存储应用信息
+                localStorage.setItem(storageKey, res);
+                console.log("stored info: " + res);
+
+                window.open(target + app.name);
+            });
 
             document.body.appendChild(helper);
             helper.appendChild(infos);
@@ -80,11 +84,13 @@
      * @param appID 应用ID
      */
     function findApp(appID) {
-        // ES6 Template literals https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+        // ES6 Template literals
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
         console.log("Working with id: " + appID);
         var selector = `a[href*='${appID}']`;
-        var target = $(selector).parent(".content_list_cont_real_i").css("background", "#FF0000");
-        if (target != null) {
+        var target = $(".content_list_cont").find(selector).parent(".content_list_cont_real_i").css("background", "#FF0000");
+        if (target.length > 0) {
+            console.log("found");
             // 移动到应用
             $('html,body').animate({
                 scrollTop: $(target).offset().top
