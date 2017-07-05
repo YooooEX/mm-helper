@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MM商城应用信息获取
 // @namespace    https://yooooex.com/
-// @version      0.6
+// @version      0.7
 // @description  自动复制应用名称,应用ID,开发者,版本号,快速搜索检查是否为商城应用
 // @author       YooooEX
 // @match        http://mm.10086.cn/android/info/*
@@ -12,8 +12,6 @@
 (function () {
     'use strict';
     var storageKey = "_mm_helper_info";
-    // 数据缓存时间,单位为天
-    var expireTime = 1 / 48;// 30分钟
     var app = {};
     $(document).ready(function () {
         console.log("ready");
@@ -59,7 +57,6 @@
                 $.cookie(storageKey, cache, {
                     domain: "mm.10086.cn",
                     path: "/",
-                    expires: expireTime
                 });
                 console.log("cached info: " + cache);
                 window.open(target + app.name);
